@@ -10,6 +10,8 @@ import (
 
 var ErrInvalidString = errors.New("invalid string")
 
+var isNeeded = regexp.MustCompile(`\d{2,}`)
+
 func Unpack(changedString string) (string, error) {
 	if len(changedString) == 0 {
 		return "", nil
@@ -25,8 +27,10 @@ func Unpack(changedString string) (string, error) {
 
 	for i, str := range runes {
 		if unicode.IsDigit(str) {
-			repeatCount, _ := strconv.Atoi(string(str))
-
+			repeatCount, err := strconv.Atoi(string(str))
+			if err != nil {
+				return "", err
+			}
 			if repeatCount == 0 {
 				newString := removeLastElement(result)
 				result.Reset()
@@ -47,7 +51,7 @@ func isStringCorrect(checkString string) bool {
 		return false
 	}
 
-	matched, _ := regexp.MatchString(`\d{2,}`, checkString)
+	matched := isNeeded.MatchString(checkString)
 
 	return !matched
 }
@@ -56,6 +60,5 @@ func removeLastElement(buildString strings.Builder) string {
 	if str := buildString.String(); len(str) > 0 {
 		return str[:len(str)-1]
 	}
-
 	return ""
 }
