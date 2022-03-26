@@ -83,19 +83,26 @@ func TestTop10(t *testing.T) {
 	})
 
 	t.Run("positive test short text < 10", func(t *testing.T) {
-		expected := []string{
-			"world", // 3
-			"Hello", // 1
+		if taskWithAsteriskIsCompleted {
+			expected := []string{
+				"world", // 3
+				"hello", // 1
+			}
+			require.Equal(t, expected, Top10(shortText))
+		} else {
+			expected := []string{
+				"world", // 3
+				"Hello", // 1
+			}
+			require.Equal(t, expected, Top10(shortText))
 		}
-
-		require.Equal(t, expected, Top10(shortText))
 	})
 
 	if taskWithAsteriskIsCompleted {
 		t.Run("positive test with commas", func(t *testing.T) {
 			expected := []string{
 				"world", // 3
-				"Hello", // 1
+				"hello", // 1
 			}
 
 			require.Equal(t, expected, Top10(textWithCommasAndDot))
