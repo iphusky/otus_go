@@ -6,9 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Change to true if needed.
-var taskWithAsteriskIsCompleted = false
-
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 	ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
@@ -44,8 +41,8 @@ var text = `Как видите, он  спускается  по  лестни�
 		В этот вечер...`
 
 var (
-	textWithCommasAndDot = "Hello, world, world, world."
-	shortText            = "Hello world world world!"
+	shortText            = "Hello world world world"
+	textWithCommasAndDot = "Hello, world, world, world!"
 )
 
 func TestTop10(t *testing.T) {
@@ -94,12 +91,14 @@ func TestTop10(t *testing.T) {
 		require.Equal(t, expected, Top10(shortText))
 	})
 
-	t.Run("positive test with commas", func(t *testing.T) {
-		expected := []string{
-			"world", // 3
-			"Hello", // 1
-		}
+	if taskWithAsteriskIsCompleted {
+		t.Run("positive test with commas", func(t *testing.T) {
+			expected := []string{
+				"world", // 3
+				"Hello", // 1
+			}
 
-		require.Equal(t, expected, Top10(textWithCommasAndDot))
-	})
+			require.Equal(t, expected, Top10(textWithCommasAndDot))
+		})
+	}
 }

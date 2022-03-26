@@ -6,7 +6,9 @@ import (
 	"strings"
 )
 
-var splitRegexp = regexp.MustCompile(`[^\\s]+`)
+var taskWithAsteriskIsCompleted = true
+
+var splitRegexp = regexp.MustCompile(`[^\s]+`)
 
 var sizeOf = 10
 
@@ -16,32 +18,19 @@ type WordsCount struct {
 }
 
 func Top10(text string) []string {
+	if len(text) == 0 {
+		return []string{}
+	}
+
 	dict := splitWordsByRegexp(text)
 
-	resultList := make([]WordsCount, sizeOf, sizeOf*2)
+	resultList := make([]WordsCount, 0)
 
 	for key, value := range dict {
 		resultList = append(resultList, WordsCount{Str: key, Count: value})
 	}
 
-	sort.Slice(resultList, func(i, j int) bool {
-		if resultList[i].Count == resultList[j].Count {
-			return resultList[i].Str < resultList[j].Str
-		}
-
-		return resultList[i].Count > resultList[j].Count
-	})
-
-	var result []string
-
-	for i := 0; i < len(resultList); i++ {
-		result = append(result, resultList[i].Str)
-		if i >= sizeOf {
-			break
-		}
-	}
-
-	return result
+	return sortDataSet(resultList)
 }
 
 func splitWordsByRegexp(text string) map[string]int {
@@ -50,7 +39,13 @@ func splitWordsByRegexp(text string) map[string]int {
 	words := splitRegexp.FindAllString(text, -1)
 
 	for _, value := range words {
-		value = strings.Trim(value, ",.!")
+		if taskWithAsteriskIsCompleted {
+			value = strings.Trim(value, ",.!-")
+			if len(value) == 0 {
+				continue
+			}
+			value = strings.ToLower(value)
+		}
 
 		if val, ok := dict[value]; ok {
 			dict[value] = val + 1
@@ -60,4 +55,25 @@ func splitWordsByRegexp(text string) map[string]int {
 	}
 
 	return dict
+}
+
+func sortDataSet(dataset []WordsCount) []string {
+	sort.Slice(dataset, func(i, j int) bool {
+		if dataset[i].Count == dataset[j].Count {
+			return dataset[i].Str < dataset[j].Str
+		}
+
+		return dataset[i].Count > dataset[j].Count
+	})
+
+	var result []string
+
+	for i := 0; i < len(dataset); i++ {
+		if i >= sizeOf {
+			break
+		}
+		result = append(result, dataset[i].Str)
+	}
+
+	return result
 }
