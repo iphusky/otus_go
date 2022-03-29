@@ -32,7 +32,7 @@ func Unpack(changedString string) (string, error) {
 				return "", err
 			}
 			if repeatCount == 0 {
-				newString := removeLastElement(result)
+				newString := removeLastElement(result.String())
 				result.Reset()
 				result.WriteString(newString)
 			} else {
@@ -56,9 +56,11 @@ func isStringCorrect(checkString string) bool {
 	return !matched
 }
 
-func removeLastElement(buildString strings.Builder) string {
-	if str := buildString.String(); len(str) > 0 {
-		return str[:len(str)-1]
+func removeLastElement(str string) string {
+	runes := []rune(str)
+
+	if last := len(runes) - 1; last >= 0 {
+		str = string(runes[:last])
 	}
-	return ""
+	return str
 }

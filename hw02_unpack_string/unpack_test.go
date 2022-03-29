@@ -63,3 +63,22 @@ func TestUnicodeString(t *testing.T) {
 		})
 	}
 }
+
+func TestMultiString(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{input: "При0вет0 Мир2", expected: "Прве Мирр"},
+		{input: "неожидан2ый прогрес2", expected: "неожиданный прогресс"},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.input, func(t *testing.T) {
+			result, err := Unpack(tc.input)
+			require.NoError(t, err)
+			require.Equal(t, tc.expected, result)
+		})
+	}
+}
