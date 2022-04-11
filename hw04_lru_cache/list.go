@@ -1,7 +1,5 @@
 package hw04lrucache
 
-var cacheSize int = 10
-
 type List interface {
 	Len() int
 	Front() *ListItem
@@ -10,23 +8,21 @@ type List interface {
 	PushBack(v interface{}) *ListItem
 	Remove(i *ListItem)
 	MoveToFront(i *ListItem)
+	GetItem(key KeyVal) *ListItem
 }
 
+type KeyVal interface{}
+
 type ListItem struct {
-	Value interface{}
+	Value KeyVal
 	Next  *ListItem
 	Prev  *ListItem
 }
 
 type list struct {
-	List
-	items []*ListItem
-}
-
-type LRUCache interface {
-	Set(key Key, value interface{}) bool
-	Get(key Key) (interface{}, bool)
-	Clear()
+	items map[KeyVal]*ListItem
+	first *ListItem
+	last  *ListItem
 }
 
 func (l *list) Len() int {
@@ -34,95 +30,89 @@ func (l *list) Len() int {
 }
 
 func (l *list) Front() *ListItem {
-	if len(l.items) > 0 {
-		return l.items[0]
-	}
-	return nil
+	return l.first
 }
 
 func (l *list) Back() *ListItem {
-	if len(l.items) > 0 {
-		return l.items[len(l.items)-1]
-	}
-	return nil
+	return l.last
 }
 
 func (l *list) PushFront(v interface{}) *ListItem {
-
 	item := &ListItem{}
 	item.Value = v
 
-	if len(l.items) == 0 {
-		l.items = append(l.items, item)
-		return item
+	if l.Len() > 0 {
+		l.first.Prev = item
+		item.Next = l.first
 	}
 
-	head := l.items[0]
-	head.Prev = item
-	item.Next = head
+	l.first = item
 
-	newItems := make([]*ListItem, len(l.items)+1)
-	newItems[0] = item
-	copy(newItems[1:], l.items)
-	l.items = newItems
+	if l.Len() == 0 {
+		l.last = item
+	}
+
+	l.items[item.Value] = item
 
 	return item
 }
 
 func (l *list) PushBack(v interface{}) *ListItem {
-
 	item := &ListItem{}
 	item.Value = v
 
-	if len(l.items) == 0 {
-		l.items = append(l.items, item)
-		return item
+	if l.Len() > 0 {
+		l.last.Next = item
+		item.Prev = l.last
 	}
 
-	tail := l.items[len(l.items)-1]
-	tail.Next = item
-	item.Prev = tail
+	l.last = item
 
-	l.items = append(l.items, item)
+	if l.Len() == 0 {
+		l.first = item
+	}
+
+	l.items[item.Value] = item
 
 	return item
 }
 
 func (l *list) MoveToFront(i *ListItem) {
-	for _, value := range l.items {
-		if value == i {
-			newItems := make([]*ListItem, len(l.items))
-			newItems[0] = &ListItem{
-				Value: value.Value,
-				Prev:  nil,
-				Next:  l.items[0],
-			}
-			j := 1
-			for count := 0; count < len(l.items); count++ {
-				if i != l.items[count] {
-					newItems[j] = l.items[count]
-					newItems[j-1].Next = newItems[j]
-					newItems[j].Prev = newItems[j-1]
-					j++
-				}
-			}
-			newItems[len(newItems)-1].Next = nil
-			l.items = newItems
-		}
-	}
+	l.Remove(i)
+	l.PushFront(i.Value)
 }
 
 func (l *list) Remove(i *ListItem) {
-	for key, value := range l.items {
-		if value == i {
-			last := len(l.items) - 1
-			l.items[key] = l.items[last]
-			l.items[last] = nil
-			l.items = l.items[:last]
-		}
+	delete(l.items, i.Value)
+
+	if i == l.first {
+		l.first.Next.Prev = nil
+		l.first = l.first.Next
+		return
 	}
+
+	if i == l.last {
+		l.last.Prev.Next = nil
+		l.last = l.last.Prev
+		return
+	}
+
+	i.Next.Prev = i.Prev
+	i.Prev.Next = i.Next
+}
+
+func (l *list) GetItem(key KeyVal) *ListItem {
+	item, ok := l.items[key]
+
+	if ok {
+		return item
+	}
+
+	return nil
 }
 
 func NewList() List {
-	return new(list)
+	return &list{
+		items: make(map[KeyVal]*ListItem),
+	}
 }
