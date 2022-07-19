@@ -4,16 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/cheggaaa/pb/v3"
+	pb "github.com/cheggaaa/pb/v3"
 )
 
 var (
 	ErrUnsupportedFile       = errors.New("unsupported file")
 	ErrOffsetExceedsFileSize = errors.New("offset exceeds file size")
+	ErrFileNotFound          = errors.New("file not found")
 )
 
 func getLimit(src *os.File, limitParam int64) (int64, error) {
@@ -33,9 +33,9 @@ func openFileAndSeek(path string, offset int64) (*os.File, error) {
 	fileFrom, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("File " + err.Error() + " not found")
+			return nil, ErrFileNotFound
 		}
-		log.Fatal(err)
+		return nil, err
 	}
 
 	fi, err := fileFrom.Stat()
@@ -51,7 +51,11 @@ func openFileAndSeek(path string, offset int64) (*os.File, error) {
 		return nil, ErrOffsetExceedsFileSize
 	}
 
-	fileFrom.Seek(offset, 0)
+	_, err = fileFrom.Seek(offset, 0)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return fileFrom, nil
 }
