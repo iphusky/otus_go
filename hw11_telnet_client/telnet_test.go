@@ -62,4 +62,14 @@ func TestTelnetClient(t *testing.T) {
 
 		wg.Wait()
 	})
+
+	t.Run("host and port not set", func(t *testing.T) {
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+
+		timeout, err := time.ParseDuration("10s")
+		require.NoError(t, err)
+		client := NewTelnetClient("", timeout, ioutil.NopCloser(in), out)
+		require.Error(t, ErrNotEnoughArgs, client.Connect())
+	})
 }
