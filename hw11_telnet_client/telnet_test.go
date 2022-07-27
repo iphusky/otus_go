@@ -64,7 +64,6 @@ func TestTelnetClient(t *testing.T) {
 	})
 
 	t.Run("host and port not set", func(t *testing.T) {
-
 		in := &bytes.Buffer{}
 		out := &bytes.Buffer{}
 

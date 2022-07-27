@@ -31,7 +31,6 @@ func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, ou
 }
 
 func (c *TelnetClient) Connect() error {
-
 	if len(c.address) == 0 {
 		return ErrAddressAndPortNotSet
 	}
