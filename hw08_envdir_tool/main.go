@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 )
@@ -26,8 +25,6 @@ func run() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(args)
 
 	_, err = RunCmd(args[2:], env)
 
