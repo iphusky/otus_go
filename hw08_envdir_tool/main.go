@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 )
@@ -26,13 +27,13 @@ func run() error {
 		return err
 	}
 
+	fmt.Println(args)
+
 	_, err = RunCmd(args[2:], env)
 
 	if err != nil {
 		return err
 	}
-
-	io.WriteString(os.Stdout, "program closed with code 0\n")
 
 	return nil
 }

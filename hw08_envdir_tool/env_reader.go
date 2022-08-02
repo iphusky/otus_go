@@ -79,12 +79,6 @@ func ReadFirstLineFromFile(filename string) ([]byte, error) {
 
 func formatContent(content []byte) string {
 	content = bytes.Replace(content, []byte("\x00"), []byte("\n"), 1)
-	position := strings.Index(string(content), "\n")
-	if position > -1 {
-		content = content[:position]
-	}
-	trimStr := strings.TrimRight(string(content), "\t\v\r")
-	trimStr = strings.TrimLeft(trimStr, "\t\v\r")
-	trimStr = strings.ReplaceAll(trimStr, " ", "")
+	trimStr := strings.TrimRight(string(content), "\t\v\r ")
 	return trimStr
 }

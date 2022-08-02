@@ -38,7 +38,7 @@ func TestRunCmd(t *testing.T) {
 
 		testEnv, ok := os.LookupEnv(filepath.Base(file.Name()))
 		require.True(t, ok)
-		require.Equal(t, "HELLOWORLD!", testEnv)
+		require.Equal(t, "HELLO WORLD!", testEnv)
 		require.Equal(t, 0, code)
 	})
 }

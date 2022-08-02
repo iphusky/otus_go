@@ -32,7 +32,7 @@ func TestReadDir(t *testing.T) {
 		for name, val := range envs {
 			require.Equal(t, filepath.Base(file.Name()), name)
 			require.False(t, val.NeedRemove)
-			require.Equal(t, "HELLOWORLD!", val.Value)
+			require.Equal(t, "HELLO WORLD!", val.Value)
 		}
 	})
 
